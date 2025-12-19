@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,23 +8,22 @@ datasource db {
 }
 
 model Idea {
-  id             Int      @id @default(autoincrement())
-  title          String   @db.VarChar(200)
-  description    String   @db.Text
-  targetAudience String   @db.VarChar(500)
-  category       String?  @db.VarChar(100)
-  expectedPrice  Decimal? @db.Decimal(10, 2)
-  version        Int      @default(1)
-  parentId       Int?
-  status         String   @default("draft") @db.VarChar(50)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  reviews          Review[]
-  parent           Idea?      @relation("IdeaVersions", fields: [parentId], references: [id], onDelete: SetNull)
+  id               Int        @id @default(autoincrement())
+  title            String     @db.VarChar(200)
+  description      String
+  targetAudience   String     @db.VarChar(500)
+  category         String?    @db.VarChar(100)
+  expectedPrice    Decimal?   @db.Decimal(10, 2)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  parentId         Int?
+  status           String     @default("draft") @db.VarChar(50)
+  version          Int        @default(1)
+  parent           Idea?      @relation("IdeaVersions", fields: [parentId], references: [id])
   improvements     Idea[]     @relation("IdeaVersions")
-  proposals        Proposal[] @relation("IdeaProposals")
   adoptedProposals Proposal[] @relation("AdoptedProposal")
+  proposals        Proposal[] @relation("IdeaProposals")
+  reviews          Review[]
 
   @@map("ideas")
 }
@@ -39,14 +35,13 @@ model Persona {
   gender         String   @db.VarChar(20)
   occupation     String   @db.VarChar(100)
   annualIncome   Int
-  personality    String   @db.Text
-  hobbies        String   @db.Text
-  challenges     String   @db.Text
-  buyingBehavior String   @db.Text
-  category       String   @db.VarChar(100)
+  personality    String
+  hobbies        String
+  challenges     String
+  buyingBehavior String
   createdAt      DateTime @default(now())
-
-  reviews Review[]
+  category       String   @db.VarChar(100)
+  reviews        Review[]
 
   @@map("personas")
 }
@@ -56,15 +51,14 @@ model Review {
   ideaId                Int
   personaId             Int
   score                 Int
-  comment               String   @db.Text
+  comment               String
   willBuy               Boolean
-  improvementSuggestion String   @db.Text
+  improvementSuggestion String
   pricePerception       String?  @db.VarChar(50)
   trustLevel            Int?
   createdAt             DateTime @default(now())
-
-  idea    Idea    @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  persona Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  idea                  Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  persona               Persona  @relation(fields: [personaId], references: [id], onDelete: Cascade)
 
   @@unique([ideaId, personaId])
   @@index([ideaId])
@@ -73,21 +67,20 @@ model Review {
 }
 
 model Proposal {
-  id                Int      @id @default(autoincrement())
-  sourceIdeaId      Int
-  title             String   @db.VarChar(200)
-  description       String   @db.Text
-  targetAudience    String   @db.VarChar(500)
-  status            String   @default("pending") @db.VarChar(50)
-  adoptedAsIdeaId   Int?
-  aiReasoning       String?  @db.Text
-  estimatedScore    Decimal? @db.Decimal(3, 1)
-  selectionReason   String?  @db.Text
-  createdAt         DateTime @default(now())
-  adoptedAt         DateTime?
-
-  sourceIdea  Idea  @relation("IdeaProposals", fields: [sourceIdeaId], references: [id], onDelete: Cascade)
-  adoptedIdea Idea? @relation("AdoptedProposal", fields: [adoptedAsIdeaId], references: [id], onDelete: SetNull)
+  id              Int       @id @default(autoincrement())
+  sourceIdeaId    Int
+  title           String    @db.VarChar(200)
+  description     String
+  targetAudience  String    @db.VarChar(500)
+  status          String    @default("pending") @db.VarChar(50)
+  adoptedAsIdeaId Int?
+  aiReasoning     String?
+  estimatedScore  Decimal?  @db.Decimal(3, 1)
+  selectionReason String?
+  createdAt       DateTime  @default(now())
+  adoptedAt       DateTime?
+  adoptedIdea     Idea?     @relation("AdoptedProposal", fields: [adoptedAsIdeaId], references: [id])
+  sourceIdea      Idea      @relation("IdeaProposals", fields: [sourceIdeaId], references: [id], onDelete: Cascade)
 
   @@index([sourceIdeaId])
   @@index([status])
