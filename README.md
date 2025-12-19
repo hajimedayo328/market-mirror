@@ -1,93 +1,353 @@
-# Market Mirror
+# Market Mirror - ビジネスアイデア検証プラットフォーム
 
-100人のAIペルソナによる市場検証アプリ
+30人の多様なペルソナによって、あなたのビジネスアイデアを多角的に評価するシステムです。
 
 ## 📋 プロジェクト概要
 
-ビジネスアイデアを入力すると、100人の多様なペルソナが辛口レビューを行い、改善案（North Star）を導き出すツール。
+Market Mirrorは、ビジネスアイデアを入力すると、異なる背景を持つ30人のペルソナがそれぞれの視点から評価・フィードバックを提供するWebアプリケーションです。
 
-## 🛠 技術スタック
+### 主な機能
+- ✨ ビジネスアイデアの入力・管理
+- 👥 3つのデッキ（30人）のペルソナによる多角的評価
+- 📊 統計情報の可視化
+- 🎨 モダンで使いやすいUI
 
-- **Frontend**: Next.js (App Router), TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Database**: PostgreSQL (Docker), Prisma ORM v6
-- **Visual**: Nano Banana (予定)
+---
 
-## 📦 現在の開発状況
+## 🎯 3つのペルソナデッキ
 
-### ✅ 完了した作業
+### 1. Standard Japan（日本の標準層）
+日本の平均的な人口分布を反映した10人のペルソナ
+- 大学生、会社員、主婦、高齢者など
+- 幅広い年齢層と職業
 
-1. **データベース環境構築**
-   - PostgreSQL（Docker環境）
-   - ポート: 5432
-   - データベース名: market_mirror
-   - ユーザー: user / パスワード: password
+### 2. Inbound Tourist（訪日外国人）
+訪日外国人観光客を想定した10人のペルソナ
+- 欧米・アジア圏からの観光客
+- バックパッカーから富裕層まで
 
-2. **Prismaセットアップ**
-   - スキーマ定義完了
-   - マイグレーション適用済み
-   - シードデータ投入済み
+### 3. Biz Tech（ビジネス・テック）
+スタートアップやテック業界の10人のペルソナ
+- 起業家、エンジニア、デザイナー、投資家など
+- イノベーション志向の評価者
 
-3. **データモデル**
-   - `Idea`: ビジネスアイデア
-   - `Persona`: AIペルソナ（5人分のサンプルデータあり）
-   - `Review`: 評価・レビュー（2件のサンプルデータあり）
+---
 
-### 🔄 次のステップ
+## 🏗️ 技術スタック
 
-- [ ] Next.js APIルートの作成
-- [ ] フロントエンドUIの実装
-- [ ] AIペルソナによるレビュー生成ロジック
-- [ ] 残り95人のペルソナデータ作成
+### フロントエンド
+- **Next.js 16** (App Router)
+- **React 19**
+- **Tailwind CSS 4**
+- **TypeScript**
 
-## 🚀 セットアップ手順（次回起動時）
+### バックエンド
+- **PostgreSQL** - リレーショナルデータベース
+- **Prisma ORM** - データベースアクセス層
+- **Next.js Server Actions** - サーバーサイド処理
 
-```bash
-# 1. プロジェクトディレクトリに移動
-cd C:\Users\赤塩甫\OneDrive\ドキュメント\授業\データベース\finalapp
+### 開発環境
+- **Docker** - PostgreSQL コンテナ
+- **pnpm/npm** - パッケージ管理
 
-# 2. データベースを起動
-cd market-mirror
-docker compose up -d
-cd ..
+---
 
-# 3. Prisma Studioでデータ確認（オプション）
-npx prisma studio
+## 📊 データベース設計
+
+### ER図とテーブル設計
+詳細は [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) を参照してください。
+
+### 主要テーブル
+
+1. **ideas** - ビジネスアイデア
+   - タイトル、説明、ターゲット層、カテゴリなど
+
+2. **personas** - 評価者ペルソナ
+   - 名前、年齢、職業、年収、性格、購買行動など
+   - 3つのカテゴリ（Standard_Japan, Inbound_Tourist, Biz_Tech）
+
+3. **reviews** - 評価・レビュー
+   - スコア、コメント、購入意向、改善提案など
+   - アイデアとペルソナの多対多の関係を管理
+
+### リレーションシップ
+```
+Idea (1) ←→ (多) Review (多) ←→ (1) Persona
 ```
 
-## 📁 プロジェクト構造
+- 外部キー制約によるデータ整合性の保証
+- カスケード削除の実装
+- ユニーク制約（1ペルソナ×1アイデア = 1レビュー）
+
+---
+
+## 🚀 セットアップ手順
+
+### 1. 前提条件
+- Node.js 18以上
+- Docker Desktop
+- Git
+
+### 2. リポジトリのクローン
+```bash
+git clone <repository-url>
+cd finalapp
+```
+
+### 3. 依存関係のインストール
+```bash
+# ルートディレクトリ
+npm install
+
+# Next.jsアプリ
+cd market-mirror
+npm install
+```
+
+### 4. データベースのセットアップ
+```bash
+# PostgreSQLコンテナを起動
+docker-compose up -d
+
+# Prismaマイグレーション実行
+npx prisma migrate dev
+
+# シードデータ投入（30人のペルソナ）
+npx prisma db seed
+```
+
+### 5. 環境変数の設定
+```bash
+# market-mirror/.env.local を作成
+DATABASE_URL="postgresql://user:password@localhost:5432/market_mirror?schema=public"
+```
+
+### 6. 開発サーバーの起動
+```bash
+cd market-mirror
+npm run dev
+```
+
+アプリケーションは http://localhost:3000 で起動します。
+
+---
+
+## 📂 プロジェクト構造
 
 ```
 finalapp/
 ├── prisma/
-│   ├── schema.prisma       # データモデル定義
-│   ├── seed.ts             # シードデータ
-│   └── migrations/         # マイグレーションファイル
-├── market-mirror/
-│   └── docker-compose.yml  # PostgreSQL設定
-├── .env                    # 環境変数（DATABASE_URL）
-├── package.json
-└── README.md
+│   ├── schema.prisma          # Prismaスキーマ定義
+│   ├── seed.ts                # シードデータ（30人のペルソナ）
+│   └── migrations/            # マイグレーション履歴
+├── market-mirror/             # Next.jsアプリケーション
+│   ├── app/
+│   │   ├── page.tsx           # トップページ（アイデア入力）
+│   │   ├── actions.ts         # Server Actions
+│   │   └── report/
+│   │       └── [id]/
+│   │           └── page.tsx   # レポートページ
+│   └── lib/
+│       └── prisma.ts          # Prismaクライアント
+├── DATABASE_DESIGN.md         # データベース設計書
+├── TRANSACTION_EXAMPLES.md    # トランザクション実装例
+└── README.md                  # このファイル
 ```
-
-## 🗄️ データベース接続情報
-
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/market_mirror?schema=public"
-```
-
-## 📝 重要な注意事項
-
-- Prisma 7から6にダウングレード済み（互換性の問題のため）
-- `.env`ファイルは`.gitignore`で除外済み
-- シードデータは`npx tsx prisma/seed.ts`で再投入可能
-
-## 🎯 プロジェクトのゴール
-
-辛口レビューを通じて、ビジネスアイデアの市場性を多角的に検証し、改善の方向性を示すツールを作る。
 
 ---
 
-**最終更新**: 2025年12月18日  
-**GitHub**: https://github.com/hajimedayo328/market-mirror
+## 💾 データベース機能
 
+### 実装されている機能
+
+1. **CRUD操作**
+   - アイデアの作成・取得
+   - レビューの作成・取得
+   - ペルソナの取得
+
+2. **リレーションシップ管理**
+   - 外部キー制約
+   - カスケード削除
+   - ユニーク制約
+
+3. **トランザクション処理**
+   - 複数レビューの一括作成
+   - エラーハンドリングとロールバック
+   - 詳細は [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) を参照
+
+4. **インデックス最適化**
+   - 主キー
+   - 外部キー
+   - 頻繁に検索されるカラム
+
+---
+
+## 🔍 使い方
+
+### 1. アイデアを入力
+トップページでビジネスアイデアを入力：
+- デッキを選択（Standard Japan / Inbound Tourist / Biz Tech）
+- タイトルと詳細を記入
+- 「検証を開始する」ボタンをクリック
+
+### 2. レポートを確認
+自動的にレポートページに遷移：
+- 入力したアイデア情報を確認
+- 選択したデッキの10人のペルソナを表示
+- 各ペルソナの基本情報（名前、年齢、職業、年収、性格など）
+
+### 3. AI評価（実装予定）
+- 各ペルソナがAIによってアイデアを評価
+- スコア、コメント、購入意向、改善提案を生成
+- 統計情報を自動集計
+
+---
+
+## 📈 データベースクエリ例
+
+### アイデアの平均スコア取得
+```sql
+SELECT 
+  i.id,
+  i.title,
+  AVG(r.score) as avg_score,
+  COUNT(r.id) as review_count
+FROM ideas i
+LEFT JOIN reviews r ON i.id = r.ideaId
+GROUP BY i.id, i.title;
+```
+
+### カテゴリ別のペルソナ取得
+```sql
+SELECT category, COUNT(*) as count
+FROM personas
+GROUP BY category;
+```
+
+### 購入意向の集計
+```sql
+SELECT 
+  i.title,
+  SUM(CASE WHEN r.willBuy THEN 1 ELSE 0 END) as buy_count,
+  COUNT(r.id) as total_reviews
+FROM ideas i
+JOIN reviews r ON i.id = r.ideaId
+GROUP BY i.title;
+```
+
+---
+
+## 🛠️ 開発者向け
+
+### Prismaコマンド
+
+```bash
+# スキーマからクライアントを生成
+npx prisma generate
+
+# マイグレーション作成
+npx prisma migrate dev --name migration_name
+
+# データベースリセット＆シード再投入
+npx prisma migrate reset
+
+# Prisma Studio起動（GUIでデータ確認）
+npx prisma studio
+```
+
+### データベース確認
+
+```bash
+# PostgreSQLに接続
+docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
+
+# テーブル一覧
+\dt
+
+# テーブル構造確認
+\d ideas
+\d personas
+\d reviews
+```
+
+---
+
+## 📝 今後の実装予定
+
+### Phase 1: AI統合（次のステップ）
+- [ ] OpenAI/Claude/Gemini APIの統合
+- [ ] ペルソナごとのAI評価生成
+- [ ] レビューの自動保存
+
+### Phase 2: 機能拡張
+- [ ] レビューの編集・削除
+- [ ] アイデアの一覧表示
+- [ ] カテゴリ別の統計ダッシュボード
+- [ ] エクスポート機能（PDF/CSV）
+
+### Phase 3: 最適化
+- [ ] ページネーション
+- [ ] キャッシング戦略
+- [ ] パフォーマンス改善
+
+---
+
+## 🎓 学習ポイント（データベース授業向け）
+
+このプロジェクトでは以下のデータベース概念を実装しています：
+
+### 1. リレーショナルデータベース設計
+- ✅ ER図の作成
+- ✅ 正規化（第3正規形）
+- ✅ 主キー・外部キーの設計
+
+### 2. SQL操作
+- ✅ CRUD操作
+- ✅ JOIN（内部結合・外部結合）
+- ✅ 集約関数（COUNT, AVG, SUM）
+- ✅ GROUP BY
+
+### 3. データ整合性
+- ✅ 外部キー制約
+- ✅ ユニーク制約
+- ✅ NOT NULL制約
+- ✅ カスケード削除
+
+### 4. トランザクション
+- ✅ ACID特性の理解
+- ✅ トランザクション分離レベル
+- ✅ ロールバック処理
+
+### 5. インデックス最適化
+- ✅ 主キーインデックス
+- ✅ 外部キーインデックス
+- ✅ 複合ユニークインデックス
+
+---
+
+## 🤝 コントリビューション
+
+データベース設計の改善提案や、新機能のアイデアがあればお気軽にご連絡ください。
+
+---
+
+## 📄 ライセンス
+
+このプロジェクトは教育目的で作成されています。
+
+---
+
+## 👤 作成者
+
+データベース授業 - 最終課題
+作成日: 2025年12月
+
+---
+
+## 📚 参考資料
+
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) - データベース設計詳細
+- [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
