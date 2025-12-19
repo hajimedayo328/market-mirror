@@ -98,18 +98,19 @@ Idea (parent) ←→ (多) Idea (children)  # 自己参照
 
 ---
 
-## 🔄 PDCA サイクル機能
+## 🔄 PDCA サイクル機能（完全自動）
 
-Market Mirrorの最大の特徴は、**任意の回数PDCAサイクルを回せる**ことです：
+Market Mirrorの最大の特徴は、**AIが完全自動でPDCAサイクルを回す**ことです：
 
-1. **Plan（計画）** - アイデアを入力
-2. **Do（実行）** - ペルソナによる評価
-3. **Check（評価）** - レビュー結果を確認
-4. **Act（改善）** - フィードバックを元に改善版を作成
+1. **Plan（計画）** - 人間がアイデアを入力（初回のみ）
+2. **Do（実行）** - AI（ペルソナ10人）が自動評価
+3. **Check（評価）** - AIがフィードバックを自動分析
+4. **Act（改善）** - **AIが自動で改善案を生成** ← 完全自動！
+5. **Loop** - 任意のN回自動繰り返し
 
-→ 再び Plan に戻り、スコアが向上するまで繰り返す！
+→ スコア向上まで完全自動で回り続ける！
 
-詳細は [PDCA_FEATURE.md](./PDCA_FEATURE.md) を参照してください。
+詳細は [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) を参照してください。
 
 ---
 
@@ -233,12 +234,12 @@ finalapp/
 - スコア、コメント、購入意向、改善提案を生成
 - 統計情報を自動集計
 
-### 4. PDCAサイクル
-- レポートページで「改善版を作成」ボタンをクリック
-- 改善提案を参考にアイデアを修正
-- 新しいバージョンとして保存
-- 再度ペルソナによる評価を受ける
-- 改善履歴をタイムラインで確認
+### 4. PDCAサイクル（完全自動）
+- レポートページで「PDCA実行」ボタンをクリック
+- 実行モード（自動/手動）と回数を選択
+- AIが自動で評価→分析→改善→再評価を繰り返す
+- リアルタイムで進捗を確認
+- 完了後、改善履歴とスライド生成が可能
 
 ---
 
@@ -313,20 +314,24 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 
 ## 📝 今後の実装予定
 
-### Phase 1: AI統合（次のステップ）
-- [ ] OpenAI/Claude/Gemini APIの統合
-- [ ] ペルソナごとのAI評価生成
-- [ ] レビューの自動保存
-- [x] **PDCAサイクル機能** ✅
+### Phase 1: AI統合
+- [x] **PDCAサイクル完全自動化** ✅
+- [x] **モックAI実装（開発用）** ✅
+- [ ] OpenAI/Claude/Gemini APIの統合（APIキー待ち）
+- [ ] 実AI評価生成への切り替え
 
-### Phase 2: 機能拡張
-- [x] **バージョン管理とPDCAサイクル** ✅
+### Phase 2: 結果出力機能
+- [x] **PDCA結果ページ** ✅
 - [x] **改善履歴の可視化** ✅
+- [ ] インフォグラフィック生成
+- [ ] スライド生成（PowerPoint）
+- [ ] PDF出力
+
+### Phase 3: 追加機能
+- [ ] リアルタイム進捗（WebSocket）
 - [ ] バージョン比較ビュー
-- [ ] レビューの編集・削除
-- [ ] アイデアの一覧表示
-- [ ] カテゴリ別の統計ダッシュボード
-- [ ] エクスポート機能（PDF/CSV）
+- [ ] アイデアの一覧・検索
+- [ ] カテゴリ別統計ダッシュボード
 
 ### Phase 3: 最適化
 - [ ] ページネーション
@@ -399,4 +404,4 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) - データベース設計詳細
 - [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
-- [PDCA_FEATURE.md](./PDCA_FEATURE.md) - PDCAサイクル機能の詳細
+- [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) - PDCAサイクル完全仕様
