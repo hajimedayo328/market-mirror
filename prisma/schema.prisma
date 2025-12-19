@@ -23,9 +23,11 @@ model Idea {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  reviews      Review[]
-  parent       Idea?    @relation("IdeaVersions", fields: [parentId], references: [id], onDelete: SetNull)
-  improvements Idea[]   @relation("IdeaVersions")
+  reviews          Review[]
+  parent           Idea?      @relation("IdeaVersions", fields: [parentId], references: [id], onDelete: SetNull)
+  improvements     Idea[]     @relation("IdeaVersions")
+  proposals        Proposal[] @relation("IdeaProposals")
+  adoptedProposals Proposal[] @relation("AdoptedProposal")
 
   @@map("ideas")
 }
@@ -68,4 +70,26 @@ model Review {
   @@index([ideaId])
   @@index([personaId])
   @@map("reviews")
+}
+
+model Proposal {
+  id                Int      @id @default(autoincrement())
+  sourceIdeaId      Int
+  title             String   @db.VarChar(200)
+  description       String   @db.Text
+  targetAudience    String   @db.VarChar(500)
+  status            String   @default("pending") @db.VarChar(50)
+  adoptedAsIdeaId   Int?
+  aiReasoning       String?  @db.Text
+  estimatedScore    Decimal? @db.Decimal(3, 1)
+  selectionReason   String?  @db.Text
+  createdAt         DateTime @default(now())
+  adoptedAt         DateTime?
+
+  sourceIdea  Idea  @relation("IdeaProposals", fields: [sourceIdeaId], references: [id], onDelete: Cascade)
+  adoptedIdea Idea? @relation("AdoptedProposal", fields: [adoptedAsIdeaId], references: [id], onDelete: SetNull)
+
+  @@index([sourceIdeaId])
+  @@index([status])
+  @@map("proposals")
 }

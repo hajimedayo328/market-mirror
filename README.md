@@ -72,6 +72,11 @@ Market Mirrorは、ビジネスアイデアを入力すると、異なる背景�
    - スコア、コメント、購入意向、改善提案など
    - アイデアとペルソナの多対多の関係を管理
 
+4. **proposals** - 改善案（NEW!）
+   - AIが生成したすべての改善案を保存
+   - 良い案も悪い案も、採用されなかった案も記録
+   - AIの思考過程と予測スコアを保存
+
 ### バージョン管理（PDCA機能）
 
 アイデアは自己参照リレーションでバージョン管理されています：
@@ -85,16 +90,38 @@ Idea (parent) ← Idea (child) ← Idea (grandchild) ...
   v1               v2               v3
 ```
 
+### 改善案管理（NEW!）
+
+**すべての改善案（良い案も悪い案も）をデータベースに保存**：
+
+```
+Idea (v1)
+  ├─ Review (10人の評価)
+  └─ Proposal (AIが生成した改善案)
+       ├─ Proposal A (スコア8.5) ✅ 採用 → Idea (v2)
+       ├─ Proposal B (スコア7.8) ❌ 不採用（保存）
+       └─ Proposal C (スコア7.2) ❌ 不採用（保存）
+```
+
+- `proposals` テーブル: すべての改善案を記録
+- `status`: pending / adopted / rejected
+- `aiReasoning`: AIの推論理由
+- `estimatedScore`: 予測スコア
+- `selectionReason`: 採用/不採用の理由
+
 ### リレーションシップ
 ```
 Idea (1) ←→ (多) Review (多) ←→ (1) Persona
 Idea (parent) ←→ (多) Idea (children)  # 自己参照
+Idea (1) ←→ (多) Proposal               # 改善案
+Proposal (多) ←→ (1) Idea               # 採用された案
 ```
 
 - 外部キー制約によるデータ整合性の保証
 - カスケード削除の実装
 - ユニーク制約（1ペルソナ×1アイデア = 1レビュー）
 - 自己参照による階層構造（バージョン管理）
+- オプショナル外部キー（Proposal → Idea: 採用時のみ）
 
 ---
 
@@ -376,6 +403,12 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - ✅ 再帰的データ取得
 - ✅ バージョン管理システム
 
+### 7. 改善案管理（NEW!）
+- ✅ すべての案を保存（良い案も悪い案も）
+- ✅ ステータス管理（pending/adopted/rejected）
+- ✅ AIの推論理由を記録
+- ✅ 試行錯誤の履歴を完全保存
+
 ---
 
 ## 🤝 コントリビューション
@@ -405,3 +438,4 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) - データベース設計詳細
 - [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
 - [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) - PDCAサイクル完全仕様
+- [PROPOSAL_MANAGEMENT.md](./PROPOSAL_MANAGEMENT.md) - 改善案管理機能
