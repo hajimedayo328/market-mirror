@@ -8,22 +8,24 @@ datasource db {
 }
 
 model Idea {
-  id               Int        @id @default(autoincrement())
-  title            String     @db.VarChar(200)
+  id               Int           @id @default(autoincrement())
+  title            String        @db.VarChar(200)
   description      String
-  targetAudience   String     @db.VarChar(500)
-  category         String?    @db.VarChar(100)
-  expectedPrice    Decimal?   @db.Decimal(10, 2)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  targetAudience   String        @db.VarChar(500)
+  category         String?       @db.VarChar(100)
+  expectedPrice    Decimal?      @db.Decimal(10, 2)
+  embedding        Unsupported("vector(1536)")?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   parentId         Int?
-  status           String     @default("draft") @db.VarChar(50)
-  version          Int        @default(1)
-  parent           Idea?      @relation("IdeaVersions", fields: [parentId], references: [id])
-  improvements     Idea[]     @relation("IdeaVersions")
-  adoptedProposals Proposal[] @relation("AdoptedProposal")
-  proposals        Proposal[] @relation("IdeaProposals")
+  status           String        @default("draft") @db.VarChar(50)
+  version          Int           @default(1)
+  parent           Idea?         @relation("IdeaVersions", fields: [parentId], references: [id])
+  improvements     Idea[]        @relation("IdeaVersions")
+  adoptedProposals Proposal[]    @relation("AdoptedProposal")
+  proposals        Proposal[]    @relation("IdeaProposals")
   reviews          Review[]
+  analysisJobs     AnalysisJob[]
 
   @@map("ideas")
 }
@@ -85,4 +87,27 @@ model Proposal {
   @@index([sourceIdeaId])
   @@index([status])
   @@map("proposals")
+}
+
+model AnalysisJob {
+  id                String    @id @default(uuid())
+  ideaId            Int
+  userId            String?   @db.VarChar(100)
+  status            String    @default("PENDING") @db.VarChar(20)
+  currentStep       Int       @default(0)
+  totalSteps        Int       @default(30)
+  influencerMode    Boolean   @default(false)
+  influencerResults Json?
+  distortionWeights Json?
+  result            Json?
+  error             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  startedAt         DateTime?
+  completedAt       DateTime?
+  idea              Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([ideaId])
+  @@map("analysis_jobs")
 }

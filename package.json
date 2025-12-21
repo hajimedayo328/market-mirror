@@ -5,7 +5,11 @@
   "scripts": {
     "demo": "tsx demo-setup.ts",
     "studio": "prisma studio",
-    "reset": "prisma migrate reset"
+    "reset": "prisma migrate reset",
+    "vector:setup": "tsx setup-vector.ts",
+    "vector:generate": "tsx generate-embeddings.ts",
+    "db:check": "tsx quick-restore.ts",
+    "db:restore": "npx prisma db seed && npm run demo && npm run vector:generate"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
