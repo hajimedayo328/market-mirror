@@ -527,3 +527,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ---
 
 以上です。この指示書を使ってプロジェクトを構築してください。
+
+
+
+

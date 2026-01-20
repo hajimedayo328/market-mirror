@@ -3,7 +3,11 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(npm install:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\ndocs: README.md改善\n\n- ドキュメントリンクに新規ドキュメント4件を追加\n- 評価予測アルゴリズム（5次元プロファイルベクトル）の詳細説明を追加\n- システムアーキテクチャ図をMermaidからASCIIアートに変更\n- ER図をMermaidからASCIIアートに変更\n- 開発期間セクションを削除\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)"
     ]
   }
 }
